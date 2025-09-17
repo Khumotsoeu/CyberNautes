@@ -1,2 +1,0 @@
-# CyberNautes
-Cybersecurity hackathon
