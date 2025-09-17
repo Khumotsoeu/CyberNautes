@@ -1,0 +1,133 @@
+/* Rest and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #121212;
+    color: #f0f0f0;
+    width: 300px;
+    padding: 16px;
+}
+
+/* Header */
+header {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+/* Alert section */
+.alert {
+    background-color: #ff3b3b;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-weight: 500;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 59, 59, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0); }
+}
+
+/* Button styles */
+button {
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-colour 0.3s ease;
+}
+
+button:hover {
+    background-color: #1565c0;
+}
+
+#clearHistoryBtn {
+    background-color: #e53935;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 12px;
+    transition: background-color 0.3s ease;
+}
+
+#ClearHistoryBtn:hover {
+    background-color: #c62828;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: center;
+}
+
+.button-group button {
+    flex: 1 1 100px;
+}
+
+/* Threat History Styles */
+h3 {
+    margin-top: 16px;
+    font-size: 1rem;
+    color: #90caf9;
+}
+
+#threatHistory {
+    list-style-type: none;
+    padding-left: 0;
+    max-height: 120px;
+    overflow-y: auto;
+    border-top: 1px solid #333;
+    margin-top: 8px;
+}
+
+#threatHistory li {
+    padding: 6px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #333;
+    color: #f0f0f0;
+}
+
+/* Status message */
+.status {
+    font-size: 0.85rem;
+    margin-top: 8px;
+    color: #90caf9;
+}
+
+#syncStatus {
+    font-size: 0.75rem;
+    color: #66bb6a;
+    margin-top: 4px;
+}
+
+#trimNotice {
+    font-size: 0.75rem;
+    color: #ffa726;
+    margin-top: 4px;
+}
+
+/* Footer */
+footer {
+    font-size: 0.75rem;
+    text-align: center;
+    margin-top: 16px;
+    color: #888;
+}
