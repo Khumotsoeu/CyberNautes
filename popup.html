@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Threat Guard</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI Threat Guard</h1>
+      <div id="status" class="status">Loading…</div>
+    </header>
+
+    <!-- Controls -->
+    <section class="controls">
+      <label class="switch">
+        <input id="toggleEnabled" type="checkbox" />
+        <span class="slider"></span>
+      </label>
+      <button id="flushBtn" class="btn primary">Flush now</button>
+    </section>
+
+    <!-- Config -->
+    <section class="config">
+      <h2>Config</h2>
+      <label>Endpoint
+        <input id="cfgEndpoint" type="text" placeholder="http://localhost:8000/ingest" />
+      </label>
+      <label>API Key
+        <input id="cfgApiKey" type="text" placeholder="X-API-Key" />
+      </label>
+      <label>Batch size
+        <input id="cfgBatchSize" type="number" min="1" max="500" />
+      </label>
+      <div class="config-actions">
+        <button id="saveCfg" class="btn">Save</button>
+        <button id="resetCfg" class="btn alt">Reset</button>
+      </div>
+    </section>
+
+    <!-- Backend Alerts -->
+    <section class="alerts">
+      <h2>Recent Alerts</h2>
+      <ul id="alertsList" class="alerts-list">
+        <li class="muted">No alerts yet</li>
+      </ul>
+      <div class="footer">
+        <button id="clearAlerts" class="btn small">Clear</button>
+        <span id="alertsCount" class="muted">0</span>
+      </div>
+    </section>
+
+    <!-- Simulated Threat Detection -->
+    <section class="simulation">
+      <h2>Simulated Threat Detection</h2>
+
+      <div id="alertBox" class="alert" style="display:none;">
+        <div id="threatType">Unknown</div>
+        <div id="statusMsg">System idle. No threats detected.</div>
+      </div>
+
+      <div class="button-group">
+        <button i

@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: threatguard
+      POSTGRES_PASSWORD: threatpass
+      POSTGRES_DB: ai_threat_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+      args:
+        REQUIREMENTS: requirements.txt
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://threatguard:threatpass@db:5432/ai_threat_db
+      INGEST_API_KEY: dev-secret
+      RATE_LIMIT: 100
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/app/server
+      - ./requirements.txt:/app/requirements.txt:ro
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: test-runner/Dockerfile   # 👈 new path
+      args:
+        REQUIREMENTS: requirements-dev.txt
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - server
+    environment:
+      DATABASE_URL: postgresql://threatguard:threatpass@db:5432/ai_threat_db
+      INGEST_API_KEY: dev-secret
+
+volumes:
+  pgdata:
