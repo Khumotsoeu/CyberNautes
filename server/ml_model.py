@@ -12,13 +12,18 @@ import joblib
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from sqlalchemy.orm import Session
-from server.models import EventRecord # import the ORM model
+from server.models import EventRecord  # import the ORM model
+from datetime import datetime, timezone
 
 MODEL_FILE = pathlib.Path(__file__).with_name("model.pkl")
 
 class ThreatModel:
     def __init__(self):
         self.model = None
+        # Retrain interval for auto-training trigger
+        self.retrain_interval: int = 200
+        # Track last trained timestamp (UTC ISO string)
+        self._last_trained_iso: str | None = None
 
     def _featurize(self, events):
         """
@@ -62,6 +67,8 @@ class ThreatModel:
         self.model.fit(X)
 
         joblib.dump(self.model, MODEL_FILE)
+        # Record last trained time (UTC)
+        self._last_trained_iso = datetime.now(timezone.utc).isoformat()
         return len(X)
 
     def predict(self, events):
@@ -82,6 +89,13 @@ class ThreatModel:
     def exists(self):
         """Check if trained model exists on disk."""
         return MODEL_FILE.exists()
+
+    # Compatibility helpers used by server
+    def is_trained(self) -> bool:
+        return self.exists()
+
+    def get_meta(self, db: Session | None = None) -> dict:
+        return {"last_trained": self._last_trained_iso}
 
 # Singleton
 threat_model = ThreatModel()

@@ -3,7 +3,17 @@ import { getCfg, setCfg, pushEvent, drain } from './queue.js';
 import { sendToBackend } from './backend.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  async function getInstallId() {
+    const key = 'ai_install_id';
+    const s = await chrome.storage.local.get(key);
+    if (s[key]) return s[key];
+    // Generate new if missing (use crypto.randomUUID if available)
+    const id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+    await chrome.storage.local.set({ [key]: id });
+    return id;
+  }
   const toggleEnabled = document.getElementById('toggleEnabled');
+  const toggleBlocking = document.getElementById('toggleBlocking');
   const flushBtn = document.getElementById('flushBtn');
   const saveCfgBtn = document.getElementById('saveCfg');
   const resetCfgBtn = document.getElementById('resetCfg');
@@ -18,12 +28,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   const threatType = document.getElementById('threatType');
   const statusMsg = document.getElementById('statusMsg');
 
+  const statsTotal = document.getElementById('statsTotal');
+  const statsLast24h = document.getElementById('statsLast24h');
+  const statsKinds = document.getElementById('statsKinds');
+  const dailyReport = document.getElementById('dailyReport');
+
   // --- Load config ---
   const cfg = await getCfg();
   toggleEnabled.checked = cfg.enabled;
   document.getElementById('cfgEndpoint').value = cfg.endpoint;
   document.getElementById('cfgApiKey').value = cfg.apiKey;
   document.getElementById('cfgBatchSize').value = cfg.batchSize;
+  toggleBlocking.checked = !!cfg.blockSuspicious;
 
   statusEl.textContent = cfg.enabled ? 'Enabled' : 'Disabled';
 
@@ -31,6 +47,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   toggleEnabled.addEventListener('change', async (e) => {
     await setCfg({ enabled: e.target.checked });
     statusEl.textContent = e.target.checked ? 'Enabled' : 'Disabled';
+  });
+
+  // --- Toggle blocking ---
+  toggleBlocking.addEventListener('change', async (e) => {
+    await setCfg({ blockSuspicious: e.target.checked });
+    // Inform background to update rules immediately
+    try {
+      const port = chrome.runtime.connect({ name: 'popupListener' });
+      port.postMessage({ kind: 'toggle_blocking', enabled: e.target.checked });
+      setTimeout(() => port.disconnect(), 200);
+    } catch {}
   });
 
   // --- Flush button ---
@@ -42,7 +69,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       addAlert(entry, "system");
 
       try {
-        await sendToBackend("/ingest", { events: batch });
+        const installId = await getInstallId();
+        await sendToBackend("/ingest", { installId, events: batch });
         console.log("[popup] flushed events to backend");
       } catch (err) {
         console.warn("[popup] failed to flush events", err);
@@ -152,4 +180,40 @@ document.addEventListener('DOMContentLoaded', async () => {
       statusMsg.textContent = `Backend alert: ${msg.message}`;
     }
   });
+
+  // === Dashboard fetch ===
+  async function refreshDashboard() {
+    try {
+      const stats = await sendToBackend('/dashboard/stats', null, { method: 'GET' });
+      statsTotal.textContent = stats?.total_events ?? '—';
+      statsLast24h.textContent = stats?.last_24h ?? '—';
+
+      statsKinds.innerHTML = '';
+      const kinds = stats?.by_kind || {};
+      Object.keys(kinds).sort().forEach(k => {
+        const li = document.createElement('li');
+        li.textContent = `${k}: ${kinds[k]}`;
+        statsKinds.appendChild(li);
+      });
+    } catch (e) {
+      // ignore in dev without server
+    }
+
+    try {
+      const report = await sendToBackend('/reports/daily', null, { method: 'GET' });
+      dailyReport.innerHTML = '';
+      for (const d of report?.days || []) {
+        const li = document.createElement('li');
+        const kinds = Object.entries(d.counts).map(([k,v]) => `${k}:${v}`).join(', ');
+        li.textContent = `${d.day} — total ${d.total} (${kinds})`;
+        dailyReport.appendChild(li);
+      }
+    } catch (e) {
+      // ignore in dev
+    }
+  }
+
+  // Initial load and periodic refresh
+  await refreshDashboard();
+  setInterval(refreshDashboard, 15000);
 });

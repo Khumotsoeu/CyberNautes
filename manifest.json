@@ -1,18 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "AI Threat Guard - Data Capture",
+  "name": "NetGuardian AI",
   "version": "0.1.0",
   "description": "Real-time metadata capture: requests, console, errors, cookie changes. Privacy-first.",
   "action": {
     "default_popup": "popup.html",
-    "default_title": "AI Threat Guard"
+    "default_title": "NetGuardian AI"
   },
   "permissions": [
     "storage",
     "cookies",
     "webRequest",
     "tabs",
-    "notifications"
+    "notifications",
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "<all_urls>"

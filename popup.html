@@ -3,23 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AI Threat Guard</title>
+  <title>NetGuardian AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>AI Threat Guard</h1>
+      <h1>NetGuardian AI</h1>
       <div id="status" class="status">Loading…</div>
     </header>
 
     <!-- Controls -->
     <section class="controls">
-      <label class="switch">
+      <label class="switch" title="Enable/Disable data capture">
         <input id="toggleEnabled" type="checkbox" />
         <span class="slider"></span>
       </label>
       <button id="flushBtn" class="btn primary">Flush now</button>
+      <label style="display:flex;align-items:center;gap:6px;">
+        <input id="toggleBlocking" type="checkbox" /> Block suspicious
+      </label>
     </section>
 
     <!-- Config -->
@@ -52,6 +58,31 @@
       </div>
     </section>
 
+    <!-- Dashboard -->
+    <section class="dashboard">
+      <h2>Dashboard</h2>
+      <div class="stats">
+        <div class="card">
+          <div class="card-title">Total Events</div>
+          <div id="statsTotal" class="card-value">—</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Last 24h</div>
+          <div id="statsLast24h" class="card-value">—</div>
+        </div>
+      </div>
+      <div class="kinds">
+        <h3>By Kind</h3>
+        <ul id="statsKinds" class="kinds-list"></ul>
+      </div>
+    </section>
+
+    <!-- Daily Report -->
+    <section class="reports">
+      <h2>Daily Report (7d)</h2>
+      <ul id="dailyReport" class="report-list"></ul>
+    </section>
+
     <!-- Simulated Threat Detection -->
     <section class="simulation">
       <h2>Simulated Threat Detection</h2>
@@ -62,4 +93,16 @@
       </div>
 
       <div class="button-group">
-        <button i
+        <button id="scanBtn" class="btn">Run quick scan</button>
+        <button id="clearBtn" class="btn alt">Clear</button>
+      </div>
+    </section>
+
+    <footer>
+      <small>NetGuardian AI</small>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

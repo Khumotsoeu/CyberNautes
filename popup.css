@@ -6,19 +6,21 @@
 }
 
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #121212;
-    color: #f0f0f0;
-    width: 320px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    background-color: #F0F2F5; /* light gray background */
+    color: #111827; /* near-black for readability */
+    width: 360px;
     padding: 16px;
 }
 
 /* Header */
 header {
     font-size: 1.2rem;
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 12px;
     text-align: center;
+    color: #2E3192; /* Deep Blue primary */
 }
 
 /* Controls section */
@@ -44,7 +46,7 @@ header {
 .slider {
     position: absolute;
     cursor: pointer;
-    background-color: #555;
+    background-color: #CBD5E1; /* slate-300 */
     border-radius: 20px;
     top: 0;
     left: 0;
@@ -64,7 +66,7 @@ header {
     transition: 0.3s;
 }
 input:checked + .slider {
-    background-color: #1e88e5;
+    background-color: #2E3192; /* primary */
 }
 input:checked + .slider:before {
     transform: translateX(20px);
@@ -72,21 +74,18 @@ input:checked + .slider:before {
 
 /* Buttons */
 button {
-    background-color: #1e88e5;
+    background-color: #2E3192; /* primary */
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: background-color 0.3s ease;
+    transition: transform 0.06s ease, background-color 0.3s ease;
 }
-button:hover {
-    background-color: #1565c0;
-}
-button.alt {
-    background-color: #555;
-}
+button:hover { background-color: #24266f; }
+button:active { transform: scale(0.98); }
+button.alt { background-color: #94a3b8; color: #111827; }
 button.small {
     font-size: 0.75rem;
     padding: 4px 8px;
@@ -96,11 +95,7 @@ button.small {
 .config {
     margin-bottom: 16px;
 }
-.config h2 {
-    font-size: 1rem;
-    color: #90caf9;
-    margin-bottom: 8px;
-}
+.config h2 { font-size: 1rem; color: #2E3192; margin-bottom: 8px; }
 .config label {
     display: block;
     margin-bottom: 8px;
@@ -108,12 +103,12 @@ button.small {
 }
 .config input {
     width: 100%;
-    padding: 6px;
-    margin-top: 2px;
-    border-radius: 4px;
-    border: 1px solid #333;
-    background-color: #1e1e1e;
-    color: #f0f0f0;
+    padding: 8px 10px;
+    margin-top: 4px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    color: #111827;
 }
 .config-actions {
     display: flex;
@@ -122,11 +117,7 @@ button.small {
 }
 
 /* Alerts section */
-.alerts h2 {
-    font-size: 1rem;
-    color: #90caf9;
-    margin-bottom: 8px;
-}
+.alerts h2 { font-size: 1rem; color: #2E3192; margin-bottom: 8px; }
 .alerts-list {
     list-style-type: none;
     padding-left: 0;
@@ -140,59 +131,57 @@ button.small {
     font-size: 0.85rem;
     border-bottom: 1px solid #333;
 }
-.alerts-list li.muted {
-    color: #888;
-    font-style: italic;
-}
+.alerts-list li.muted { color: #6b7280; font-style: italic; }
 
 /* System alerts (config saved/reset, flush, etc.) */
 .system-alert {
-    background-color: #1e3a5f;
-    color: #90caf9;
-    border-left: 4px solid #42a5f5;
+    background-color: #e0e7ff;
+    color: #3730a3;
+    border-left: 4px solid #818cf8;
     padding: 6px 8px;
     margin-bottom: 4px;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 0.85rem;
-    opacity: 0.75; /* 🔹 Slightly faded */
-}
-.system-alert:hover {
-    opacity: 1; /* Highlight on hover */
 }
 
 /* Threat alerts (backend or simulated threats) */
 .threat-alert {
-    background-color: #5f1e1e;
-    color: #ff6b6b;
-    border-left: 4px solid #ff3b3b;
+    background-color: #FFF4E6; /* soft orange bg */
+    color: #FF8C00; /* Vibrant Orange accent */
+    border-left: 4px solid #FF8C00;
     padding: 6px 8px;
     margin-bottom: 4px;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 0.9rem;
     font-weight: 600;
-    opacity: 1;
 }
 
 /* Simulation section (Scan / Clear buttons) */
-.simulation {
-    margin: 12px 0;
-    text-align: center;
-}
+.simulation { margin: 12px 0; text-align: center; }
 .simulation button {
     margin: 0 4px;
 }
 
 /* Status message */
-.status {
-    font-size: 0.85rem;
-    margin-top: 8px;
-    color: #90caf9;
-}
+.status { font-size: 0.85rem; margin-top: 8px; color: #2E3192; }
 
 /* Footer */
-footer {
-    font-size: 0.75rem;
-    text-align: center;
-    margin-top: 16px;
-    color: #888;
+footer { font-size: 0.75rem; text-align: center; margin-top: 16px; color: #6b7280; }
+
+/* Dashboard */
+.dashboard h2, .reports h2 { color: #2E3192; font-size: 1rem; margin: 12px 0 6px; }
+.stats { display: flex; gap: 8px; }
+.card { flex: 1; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+.card-title { font-size: 0.8rem; color: #6b7280; }
+.card-value { font-size: 1.2rem; font-weight: 700; color: #111827; }
+.kinds-list, .report-list { list-style: none; padding: 0; margin: 6px 0; }
+.kinds-list li, .report-list li { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; }
+
+/* Subtle animations */
+.alerts-list li, .kinds-list li, .report-list li, .card {
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+.alerts-list li:hover, .kinds-list li:hover, .report-list li:hover, .card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
 }
