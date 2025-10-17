@@ -1,6 +1,6 @@
 // background.js (service worker, type=module)
 import { uuidv4, safeNow, redactUrl } from './util.js';
-import { pushEvent, flushLoop, getCfg } from './queue.js';
+import { pushEvent, flushLoop, getCfg, setCfg } from './queue.js';
 
 let installId = null;
 async function getInstallId() {
@@ -50,6 +50,12 @@ chrome.runtime.onConnect.addListener(port => {
   } else if (port.name === 'popupListener') {
     popupPorts.add(port);
     port.onDisconnect.addListener(() => popupPorts.delete(port));
+    //handle toggle of realtime blocking from popup
+    port.message.addListener(async (msg) => {
+      if (msg && msg.kind === 'toggle_blocking') {
+        await setRealtimeBlocking(msg.enabled === true);
+      }
+    })
   }
 });
 
@@ -82,10 +88,16 @@ async function checkAnomaly(event) {
       chrome.notifications.create({
         type: "basic",
         iconUrl: "icons/icon128.png",   // ✅ correct path
-        title: "AI Threat Guard Alert",
+        title: "NetGuardian AI Alert",
         message: alertMsg,
         priority: 2
       });
+      
+      //Optional: add temporary blocking rule if enabled
+      const cfg = await getCfg();
+      if (cfg.blockSuspicious && event.url) {
+        await addTemporaryBlockRule(event.url);
+      }
 
       console.debug("[bg] anomaly alert sent to popup + notification");
     }
@@ -122,3 +134,28 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
 
 // === Start flushing loop ===
 flushLoop(getInstallId);
+
+// == Real-time blocking helper ===
+async function setRealtimeBlocking(enabled) {
+  const cfg = await getCfg();
+  await setCfg({ ...cfg, blockSuspicious:  !!enabled });
+}
+
+async function  addTemporaryBlockRule(url) {
+  try {
+    const u = new URL(url);
+    const host = u.host;
+    const id = Math.floor(Math.random () * 1e9) + 1;
+    const rule = {
+      id,
+      priority: 1,
+      action: {type: 'block'},
+      condition: {urlFilter: host, resourceTypes: [ 'main_frame', 'sub_frame', 'xmlhttprequest', 'script'] }
+    };
+    await chrome.declarativeNetRequest.updateDynamicRules({ addRules: [rule] });
+    //Auto-remove after 5 minutes
+    setTimeout(async () => {
+      try { await chrome.declarativeNetRequest.updateDynamicRules({ removeRulesIds: [id] }); } catch {}
+    }, 5 * 60 * 1000); 
+  } catch {}
+}
