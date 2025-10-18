@@ -18,6 +18,10 @@ from server.ml_model import threat_model     # ✅ safe import now
 # -------------------------------------------------
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./server/events.db")
 
+if DATABASE_URL.startswith("sqlite:///"):
+    db_path = DATABASE_URL.replace("sqlite:///", "")
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+
 engine = create_engine(
     DATABASE_URL,
     connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
@@ -71,7 +75,7 @@ def verify_api_key(x_api_key: str = Header(...)):
 # Pydantic Schemas
 # -------------------------------------------------
 class Event(BaseModel):
-    # Allow extra fileds so we can persiis tfull event payload
+    # Allow extra fileds so we can persist tfull event payload
     model_config = ConfigDict(extra="allow")
 
     kind: str
@@ -115,7 +119,7 @@ def ingest(req: IngestRequest, db: Session = Depends(get_db)):
             event_payload = ev.model_dump()
         except Exception :
             # Fallback for any parsing edge case
-            event_payload = {" kind": ev.kind, "message": ev.message, "path": ev.path, "method": ev.method}
+            event_payload = {"kind": ev.kind, "message": ev.message, "path": ev.path, "method": ev.method}
 
         record = EventRecord(
             install_id=req.installId,
@@ -174,7 +178,7 @@ def dashboard_stats(db: Session = Depends(get_db)):
 
     # Counts per kind (all-time)
     rows = (
-        db.query(EventRecord, func.count(EventRecord.id))
+        db.query(EventRecord.kind, func.count(EventRecord.id))
         .group_by(EventRecord.kind)
         .all()
     )
@@ -217,11 +221,11 @@ def reports_daily(days: int = 7, db: Session = Depends(get_db)):
     for day, kind, count in rows:
         key = str(day)
         series.setdefault(key, {})[kind or "unknown"] = count
-        out = [
+    out = [
             {"day": day, "counts": series[day], "total": sum(series[day].values())}
             for day in sorted(series.keys())
         ]
-        return {"days": out}
+    return {"days": out}
     
 
 # -------------------------------------------------

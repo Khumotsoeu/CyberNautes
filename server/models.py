@@ -1,7 +1,7 @@
 # server/models.py
 from sqlalchemy import Column, Integer, String, JSON, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
+from datetime import datetime, timezone
 
 Base = declarative_base()
 
